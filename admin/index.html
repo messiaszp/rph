@@ -146,6 +146,7 @@
     const uploadedImage = document.getElementById("uploaded_image");
     const preview = document.getElementById("preview");
     const imageInfo = document.getElementById("image_info");
+    const imageUrl = document.getElementById("image_url");
 
     const myWidget = cloudinary.createUploadWidget(
 
@@ -203,6 +204,9 @@
 
           imageInfo.textContent =
             result.info.original_filename;
+
+            imageUrl.textContent =
+            result.info.secure_url;
 
           uploadedImage.style.display = "block";
         }
