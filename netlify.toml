@@ -4,3 +4,9 @@
   status = 200
   force = true
   conditions = {Role = ["admin"]}
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/login/"
+  status = 302
+  force = true
