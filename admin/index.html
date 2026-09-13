@@ -115,6 +115,13 @@
       <button id="upload_widget">
         + Adicionar fotos
       </button>
+      <label for="photo_category">Categoria</label>
+
+<select id="photo_category">
+  <option value="eventos">Eventos</option>
+  <option value="esportes">Esportes</option>
+  <option value="retratos">Retratos</option>
+</select>
 
       <div id="status"></div>
 
@@ -147,6 +154,8 @@
     const preview = document.getElementById("preview");
     const imageInfo = document.getElementById("image_info");
     const imageUrl = document.getElementById("image_url");
+    const photoCategory =
+  document.getElementById("photo_category");
 
     const myWidget = cloudinary.createUploadWidget(
 
@@ -207,6 +216,42 @@
 
             imageUrl.textContent =
             result.info.secure_url;
+            fetch("/.netlify/functions/save-photo", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    id: result.info.public_id,
+    image: result.info.secure_url,
+    filename: result.info.original_filename,
+    category: photoCategory.value,
+    size: "",
+    alt: `Foto de ${photoCategory.value}`
+  })
+})
+.then(response => response.json())
+.then(data => {
+
+  console.log("Foto salva:", data);
+
+  if (data.success) {
+    status.textContent =
+      "Foto enviada e cadastrada com sucesso!";
+  } else {
+    status.textContent =
+      "Foto enviada, mas não foi cadastrada.";
+  }
+
+})
+.catch(error => {
+
+  console.error(error);
+
+  status.textContent =
+    "Foto enviada, mas ocorreu um erro ao cadastrar.";
+
+});
 
           uploadedImage.style.display = "block";
         }
