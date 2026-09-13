@@ -64,29 +64,33 @@
 
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-  <script>
+    <script>
 
-    if (window.netlifyIdentity) {
+  if (window.netlifyIdentity) {
 
-      netlifyIdentity.on("init", user => {
+    netlifyIdentity.on("init", user => {
 
-        if (user) {
-          window.location.href = "/admin/";
-        }
-
-      });
-
-      netlifyIdentity.on("login", () => {
-
+      if (user) {
         window.location.href = "/admin/";
+        return;
+      }
 
-      });
+      netlifyIdentity.open();
 
-      netlifyIdentity.init();
+    });
 
-    }
+    netlifyIdentity.on("login", () => {
 
-  </script>
+      window.location.href = "/admin/";
+
+    });
+
+    netlifyIdentity.init();
+
+  }
+
+</script>
+
 
 </body>
 </html>
