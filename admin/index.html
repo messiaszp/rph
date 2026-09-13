@@ -283,6 +283,69 @@
 
       }, false);
 
+    async function loadPhotos() {
+
+  const photosList = document.getElementById("photos-list");
+
+  try {
+
+    const response = await fetch(
+      "/.netlify/functions/list-photos"
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      photosList.textContent =
+        "Não foi possível carregar as fotos.";
+      return;
+    }
+
+    const photos = data.photos.filter(
+      photo => photo.image
+    );
+
+    if (photos.length === 0) {
+      photosList.textContent =
+        "Nenhuma foto cadastrada.";
+      return;
+    }
+
+    photosList.innerHTML = "";
+
+    photos.forEach(photo => {
+
+      const item = document.createElement("div");
+
+      item.innerHTML = `
+        <img
+          src="${photo.image}"
+          alt="${photo.alt || "Fotografia"}"
+          style="width:180px; height:120px; object-fit:cover;"
+        >
+
+        <p>
+          <strong>${photo.filename || photo.id}</strong><br>
+          Categoria: ${photo.category || "Sem categoria"}
+        </p>
+      `;
+
+      photosList.appendChild(item);
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    photosList.textContent =
+      "Erro ao carregar as fotos.";
+
+  }
+
+}
+
+loadPhotos();
   </script>
 
 </body>
