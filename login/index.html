@@ -57,7 +57,9 @@
 
     <p>Entre para acessar o gerenciamento de fotos.</p>
 
-    <div id="login"></div>
+    <div data-netlify-identity-button>
+  Entrar no painel
+</div>
 
   </main>
 
@@ -75,7 +77,7 @@
         return;
       }
 
-      netlifyIdentity.open();
+      netlifyIdentity.open("login");
 
     });
 
