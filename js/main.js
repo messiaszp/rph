@@ -21,27 +21,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadGallery() {
-    try {
-      const response = await fetch("data/gallery.json");
+  try {
+    const response = await fetch("/.netlify/functions/list-photos");
 
-      if (!response.ok) {
-        throw new Error("Não foi possível carregar gallery.json");
-      }
-
-      galleryData = await response.json();
-
-      renderGallery();
-
-    } catch (error) {
-      console.error("Erro ao carregar galeria:", error);
-
-      gallery.innerHTML = `
-        <p style="padding: 20px;">
-          Não foi possível carregar as fotografias.
-        </p>
-      `;
+    if (!response.ok) {
+      throw new Error("Não foi possível carregar as fotografias");
     }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error("A função não retornou as fotografias");
+    }
+
+    galleryData = data.photos.filter(photo => photo.image);
+
+    renderGallery();
+
+  } catch (error) {
+    console.error("Erro ao carregar galeria:", error);
+
+    gallery.innerHTML = `
+      <p style="padding: 20px;">
+        Não foi possível carregar as fotografias.
+      </p>
+    `;
   }
+}
 
   function renderGallery() {
 
