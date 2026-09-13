@@ -27,24 +27,72 @@
       background: #1a1815;
       border: 1px solid rgba(236, 232, 224, 0.14);
       padding: 40px;
-      text-align: center;
     }
 
     h1 {
       margin: 0 0 10px;
+      text-align: center;
       font-family: Georgia, serif;
       font-weight: 400;
       font-size: 2rem;
     }
 
-    p {
+    .subtitle {
+      margin: 0 0 30px;
+      text-align: center;
       color: #a39c8e;
-      margin-bottom: 30px;
     }
 
-    #login {
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #c9c2b5;
+      font-size: 14px;
+    }
+
+    input {
       width: 100%;
-      min-height: 48px;
+      height: 46px;
+      margin-bottom: 20px;
+      padding: 0 12px;
+      border: 1px solid rgba(236, 232, 224, 0.2);
+      background: #121110;
+      color: #ece8e0;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #ab8f63;
+    }
+
+    button {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #ab8f63;
+      background: #ab8f63;
+      color: #121110;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: transparent;
+      color: #ece8e0;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #message {
+      min-height: 22px;
+      margin-top: 20px;
+      text-align: center;
+      color: #a39c8e;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -55,44 +103,121 @@
 
     <h1>Painel do fotógrafo</h1>
 
-    <p>Entre para acessar o gerenciamento de fotos.</p>
+    <p class="subtitle">
+      Entre para acessar o gerenciamento de fotos.
+    </p>
 
-    <div data-netlify-identity-button>
-  Entrar no painel
-</div>
+    <form id="login-form">
+
+      <label for="email">
+        E-mail
+      </label>
+
+      <input
+        id="email"
+        type="email"
+        autocomplete="email"
+        required
+      >
+
+      <label for="password">
+        Senha
+      </label>
+
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button id="login-button" type="submit">
+        Entrar
+      </button>
+
+    </form>
+
+    <div id="message"></div>
 
   </main>
 
 
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script type="module">
 
-    <script>
+    import {
+      login,
+      getUser,
+      handleAuthCallback
+    } from "https://esm.sh/@netlify/identity";
 
-  if (window.netlifyIdentity) {
+    const form = document.getElementById("login-form");
+    const button = document.getElementById("login-button");
+    const message = document.getElementById("message");
 
-    netlifyIdentity.on("init", user => {
 
-      if (user) {
-        window.location.href = "/admin/";
-        return;
+    async function initialize() {
+
+      try {
+
+        await handleAuthCallback();
+
+        const user = await getUser();
+
+        if (user) {
+          window.location.href = "/admin/";
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
       }
 
-      netlifyIdentity.open("login");
+    }
+
+
+    form.addEventListener("submit", async event => {
+
+      event.preventDefault();
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      button.disabled = true;
+      button.textContent = "Entrando...";
+      message.textContent = "";
+
+
+      try {
+
+        await login(email, password);
+
+        message.textContent =
+          "Login realizado. Abrindo painel...";
+
+        window.location.href = "/admin/";
+
+      } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+          "E-mail ou senha incorretos.";
+
+        button.disabled = false;
+        button.textContent = "Entrar";
+
+      }
 
     });
 
-    netlifyIdentity.on("login", () => {
 
-      window.location.href = "/admin/";
+    initialize();
 
-    });
-
-    netlifyIdentity.init();
-
-  }
-
-</script>
-
+  </script>
 
 </body>
 </html>
