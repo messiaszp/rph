@@ -177,36 +177,19 @@ forgotPassword.addEventListener("click", async event => {
 
   try {
 
-    const response = await fetch(
-      "/.netlify/identity/recover",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: email
-        })
-      }
-    );
+  await requestPasswordRecovery(email);
 
-    if (!response.ok) {
-      throw new Error("Falha ao solicitar recuperação");
-    }
+  message.textContent =
+    "Enviamos um link para redefinir sua senha.";
 
-    message.textContent =
-      "Enviamos um link para redefinir sua senha.";
+} catch (error) {
 
-  } catch (error) {
+  console.error(error);
 
-    console.error(error);
+  message.textContent =
+    "Não foi possível enviar o link.";
 
-    message.textContent =
-      "Não foi possível enviar o link.";
-
-  }
-
-});
+}
 
     async function initialize() {
 
