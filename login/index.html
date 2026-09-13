@@ -153,15 +153,49 @@
 
   <script type="module">
 
-    import {
-      login,
-      getUser,
-      handleAuthCallback
-    } from "https://esm.sh/@netlify/identity";
-
+   import {
+  login,
+  getUser,
+  handleAuthCallback,
+  resetPassword
+} from "https://esm.sh/@netlify/identity";
+    
     const form = document.getElementById("login-form");
     const button = document.getElementById("login-button");
     const message = document.getElementById("message");
+    const forgotPassword =
+  document.getElementById("forgot-password");
+
+forgotPassword.addEventListener("click", async event => {
+
+  event.preventDefault();
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  if (!email) {
+    message.textContent =
+      "Digite seu e-mail primeiro.";
+    return;
+  }
+
+  try {
+
+    await resetPassword(email);
+
+    message.textContent =
+      "Enviamos um link para redefinir sua senha.";
+
+  } catch (error) {
+
+    console.error(error);
+
+    message.textContent =
+      "Não foi possível enviar o link.";
+
+  }
+
+});
 
 
     async function initialize() {
