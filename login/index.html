@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Login — Painel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #121110;
+      color: #ece8e0;
+      font-family: Arial, sans-serif;
+    }
+
+    .login {
+      width: min(420px, calc(100% - 40px));
+      background: #1a1815;
+      border: 1px solid rgba(236, 232, 224, 0.14);
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-family: Georgia, serif;
+      font-weight: 400;
+      font-size: 2rem;
+    }
+
+    p {
+      color: #a39c8e;
+      margin-bottom: 30px;
+    }
+
+    #login {
+      width: 100%;
+      min-height: 48px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="login">
+
+    <h1>Painel do fotógrafo</h1>
+
+    <p>Entre para acessar o gerenciamento de fotos.</p>
+
+    <div id="login"></div>
+
+  </main>
+
+
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <script>
+
+    if (window.netlifyIdentity) {
+
+      netlifyIdentity.on("init", user => {
+
+        if (user) {
+          window.location.href = "/admin/";
+        }
+
+      });
+
+      netlifyIdentity.on("login", () => {
+
+        window.location.href = "/admin/";
+
+      });
+
+      netlifyIdentity.init();
+
+    }
+
+  </script>
+
+</body>
+</html>
