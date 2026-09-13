@@ -318,19 +318,79 @@
       const item = document.createElement("div");
 
       item.innerHTML = `
-        <img
-          src="${photo.image}"
-          alt="${photo.alt || "Fotografia"}"
-          style="width:180px; height:120px; object-fit:cover;"
-        >
+  <img
+    src="${photo.image}"
+    alt="${photo.alt || "Fotografia"}"
+    style="width:180px; height:120px; object-fit:cover;"
+  >
 
-        <p>
-          <strong>${photo.filename || photo.id}</strong><br>
-          Categoria: ${photo.category || "Sem categoria"}
-        </p>
-      `;
+  <p>
+    <strong>${photo.filename || photo.id}</strong><br>
+    Categoria: ${photo.category || "Sem categoria"}
+  </p>
+
+  <button
+    type="button"
+    class="delete-photo"
+    data-id="${photo.id}"
+  >
+    Excluir
+  </button>
+`;
 
       photosList.appendChild(item);
+      const deleteButton = item.querySelector(".delete-photo");
+
+deleteButton.addEventListener("click", async () => {
+
+  const confirmed = confirm(
+    "Tem certeza que deseja excluir esta foto?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    deleteButton.disabled = true;
+    deleteButton.textContent = "Excluindo...";
+
+    const response = await fetch(
+      "/.netlify/functions/delete-photo",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id: photo.id
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert("Não foi possível excluir a foto.");
+      deleteButton.disabled = false;
+      deleteButton.textContent = "Excluir";
+      return;
+    }
+
+    item.remove();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Erro ao excluir a foto.");
+
+    deleteButton.disabled = false;
+    deleteButton.textContent = "Excluir";
+  }
+
+});
 
     });
 
