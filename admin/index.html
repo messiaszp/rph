@@ -532,15 +532,6 @@
   </main>
 
   <!-- =====================================================
-       CLOUDINARY
-  ====================================================== -->
-
-  <script
-    src="https://upload-widget.cloudinary.com/global/all.js"
-    type="text/javascript">
-  </script>
-
-  <!-- =====================================================
        JAVASCRIPT
   ====================================================== -->
 
@@ -591,187 +582,260 @@
       document.getElementById("photo_category");
 
 
-    /* =====================================================
-       CLOUDINARY UPLOAD
-    ===================================================== */
+   /* =====================================================
+   R2 UPLOAD
+===================================================== */
 
-    const myWidget =
-      cloudinary.createUploadWidget(
+const uploadButton =
+  document.getElementById("upload_widget");
 
-        {
-          cloudName: "fu66mxxo",
+const photoFiles =
+  document.getElementById("photo_files");
 
-          uploadPreset: "rodrigo_photos",
 
-          multiple: true,
+uploadButton.addEventListener(
+  "click",
+  () => {
 
-          maxFiles: 20,
+    photoFiles.click();
 
-          clientAllowedFormats: [
-            "jpg",
-            "jpeg",
-            "png",
-            "webp"
-          ],
+  }
+);
 
-          maxImageFileSize: 500000000,
 
-          sources: [
-            "local",
-            "camera"
-          ]
-        },
+photoFiles.addEventListener(
+  "change",
+  async () => {
 
+    const files =
+      Array.from(photoFiles.files);
 
-        (error, result) => {
+    if (!files.length) {
+      return;
+    }
 
-          if (error) {
 
-            console.error(error);
+    if (files.length > 20) {
 
-            status.textContent =
-              "Ocorreu um erro durante o upload.";
+      alert(
+        "Você pode enviar no máximo 20 fotos por vez."
+      );
 
-            return;
+      photoFiles.value = "";
 
-          }
+      return;
 
+    }
 
-          if (result.event === "upload-added") {
 
-            status.textContent =
-              "Foto adicionada. Aguarde o upload...";
+    uploadButton.disabled = true;
 
-          }
 
+    try {
 
-          if (result.event === "success") {
+      for (
+        let i = 0;
+        i < files.length;
+        i++
+      ) {
 
-            console.log(
-              "Upload realizado:",
-              result.info
-            );
+        const file =
+          files[i];
 
 
-            status.textContent =
-              "Foto enviada com sucesso!";
+        status.textContent =
+          `Preparando foto ${i + 1} de ${files.length}...`;
 
 
-            preview.src =
-              result.info.secure_url;
+        /* =============================================
+           1. PEDIR URL TEMPORÁRIA AO NETLIFY
+        ============================================= */
 
+        const prepareResponse =
+          await fetch(
+            "/.netlify/functions/upload-r2",
+            {
+              method: "POST",
 
-            imageInfo.textContent =
-              result.info.original_filename;
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
 
+              body: JSON.stringify({
 
-            imageUrl.textContent =
-              result.info.secure_url;
+                filename:
+                  file.name,
 
+                contentType:
+                  file.type
 
-            /* =============================================
-               SALVAR FOTO
-            ============================================= */
+              })
 
-            fetch(
-              "/.netlify/functions/save-photo",
-              {
-                method: "POST",
+            }
+          );
 
-                headers: {
-                  "Content-Type": "application/json"
-                },
 
-                body: JSON.stringify({
+        const prepareData =
+          await prepareResponse.json();
 
-                  id: result.info.public_id,
 
-                  image: result.info.secure_url,
-
-                  filename:
-                    result.info.original_filename,
-
-                  category:
-                    photoCategory.value,
-
-                  size: "",
-
-                  alt:
-                    `Foto de ${photoCategory.value}`
-
-                })
-              }
-            )
-
-            .then(response =>
-              response.json()
-            )
-
-            .then(data => {
-
-              console.log(
-                "Foto salva:",
-                data
-              );
-
-
-              if (data.success) {
-
-                status.textContent =
-                  "Foto enviada e cadastrada com sucesso!";
-
-                loadPhotos();
-
-              } else {
-
-                status.textContent =
-                  "Foto enviada, mas não foi cadastrada.";
-
-              }
-
-            })
-
-            .catch(error => {
-
-              console.error(error);
-
-              status.textContent =
-                "Foto enviada, mas ocorreu um erro ao cadastrar.";
-
-            });
-
-
-            uploadedImage.style.display =
-              "block";
-
-          }
-
-
-          if (result.event === "close") {
-
-            console.log(
-              "Widget fechado."
-            );
-
-          }
+        if (
+          !prepareResponse.ok ||
+          !prepareData.success
+        ) {
+
+          throw new Error(
+            prepareData.message ||
+            "Não foi possível preparar o upload."
+          );
 
         }
 
-      );
+
+        /* =============================================
+           2. ENVIAR ARQUIVO DIRETAMENTE PARA O R2
+        ============================================= */
+
+        status.textContent =
+          `Enviando ${i + 1} de ${files.length}: ${file.name}`;
 
 
-    document
-      .getElementById("upload_widget")
-      .addEventListener(
-        "click",
-        function () {
+        const uploadResponse =
+          await fetch(
+            prepareData.uploadUrl,
+            {
+              method: "PUT",
 
-          myWidget.open();
+              headers: {
+                "Content-Type":
+                  file.type
+              },
 
-        },
-        false
-      );
+              body: file
 
+            }
+          );
+
+
+        if (!uploadResponse.ok) {
+
+          throw new Error(
+            `Erro ao enviar ${file.name} para o R2.`
+          );
+
+        }
+
+
+        /* =============================================
+           3. SALVAR METADADOS NO NETLIFY BLOBS
+        ============================================= */
+
+        status.textContent =
+          `Cadastrando ${i + 1} de ${files.length}: ${file.name}`;
+
+
+        const saveResponse =
+          await fetch(
+            "/.netlify/functions/save-photo",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                id:
+                  prepareData.key,
+
+                image:
+                  prepareData.publicUrl,
+
+                filename:
+                  file.name,
+
+                category:
+                  photoCategory.value,
+
+                size:
+                  "",
+
+                alt:
+                  `Foto de ${photoCategory.value}`
+
+              })
+
+            }
+          );
+
+
+        const saveData =
+          await saveResponse.json();
+
+
+        if (
+          !saveResponse.ok ||
+          !saveData.success
+        ) {
+
+          throw new Error(
+            `A foto ${file.name} foi enviada para o R2, mas não foi cadastrada.`
+          );
+
+        }
+
+
+        /* =============================================
+           4. MOSTRAR ÚLTIMA FOTO ENVIADA
+        ============================================= */
+
+        preview.src =
+          prepareData.publicUrl;
+
+        imageInfo.textContent =
+          file.name;
+
+        imageUrl.textContent =
+          prepareData.publicUrl;
+
+        uploadedImage.style.display =
+          "block";
+
+      }
+
+
+      status.textContent =
+        `${files.length} foto(s) enviada(s) e cadastrada(s) com sucesso!`;
+
+
+      /* ===============================================
+         ATUALIZAR GALERIA DO PAINEL
+      =============================================== */
+
+      await loadPhotos();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      status.textContent =
+        error.message ||
+        "Ocorreu um erro durante o upload.";
+
+    } finally {
+
+      uploadButton.disabled = false;
+
+      photoFiles.value = "";
+
+    }
+
+  }
+);
 
     /* =====================================================
        CARREGAR FOTOS
