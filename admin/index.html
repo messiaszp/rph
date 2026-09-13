@@ -325,9 +325,32 @@
   >
 
   <p>
-    <strong>${photo.filename || photo.id}</strong><br>
-    Categoria: ${photo.category || "Sem categoria"}
+    <strong>${photo.filename || photo.id}</strong>
   </p>
+
+  <label>
+    Categoria:
+    <select class="edit-category">
+      <option value="eventos" ${photo.category === "eventos" ? "selected" : ""}>
+        Eventos
+      </option>
+
+      <option value="esportes" ${photo.category === "esportes" ? "selected" : ""}>
+        Esportes
+      </option>
+
+      <option value="retratos" ${photo.category === "retratos" ? "selected" : ""}>
+        Retratos
+      </option>
+    </select>
+  </label>
+
+  <button
+    type="button"
+    class="save-category"
+  >
+    Salvar categoria
+  </button>
 
   <button
     type="button"
@@ -391,7 +414,56 @@ deleteButton.addEventListener("click", async () => {
   }
 
 });
+const categorySelect = item.querySelector(".edit-category");
+const saveCategoryButton = item.querySelector(".save-category");
 
+saveCategoryButton.addEventListener("click", async () => {
+
+  try {
+
+    saveCategoryButton.disabled = true;
+    saveCategoryButton.textContent = "Salvando...";
+
+    const response = await fetch(
+      "/.netlify/functions/update-photo",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id: photo.id,
+          category: categorySelect.value
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert("Não foi possível atualizar a categoria.");
+      return;
+    }
+
+    saveCategoryButton.textContent = "Salvo!";
+
+    setTimeout(() => {
+      saveCategoryButton.textContent = "Salvar categoria";
+    }, 1500);
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Erro ao atualizar a categoria.");
+
+  } finally {
+
+    saveCategoryButton.disabled = false;
+
+  }
+
+});
     });
 
   } catch (error) {
