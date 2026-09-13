@@ -1,4 +1,5 @@
 import { getStore } from "@netlify/blobs";
+import { getUser } from "@netlify/identity";
 
 export default async (request) => {
 
@@ -13,6 +14,30 @@ export default async (request) => {
   }
 
   try {
+
+    // Verificar autenticação
+    const user = await getUser();
+
+    if (!user) {
+      return Response.json(
+        {
+          success: false,
+          message: "Usuário não autenticado"
+        },
+        { status: 401 }
+      );
+    }
+
+    // Verificar role de administrador
+    if (!user.roles || !user.roles.includes("admin")) {
+      return Response.json(
+        {
+          success: false,
+          message: "Acesso negado"
+        },
+        { status: 403 }
+      );
+    }
 
     const data = await request.json();
 
@@ -44,8 +69,9 @@ export default async (request) => {
 
     photo.category = data.category || photo.category;
     photo.size = data.size || photo.size || "lg";
+
     photo.alt = `Foto de ${photo.category}`;
-    
+
     await store.setJSON(data.id, photo);
 
     return Response.json({
@@ -64,5 +90,7 @@ export default async (request) => {
       },
       { status: 500 }
     );
+
   }
+
 };
