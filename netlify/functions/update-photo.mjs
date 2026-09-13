@@ -43,9 +43,9 @@ export default async (request) => {
     }
 
     photo.category = data.category || photo.category;
-
+    photo.size = data.size || photo.size || "lg";
     photo.alt = `Foto de ${photo.category}`;
-
+    
     await store.setJSON(data.id, photo);
 
     return Response.json({
