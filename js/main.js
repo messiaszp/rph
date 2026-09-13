@@ -21,23 +21,83 @@
     { id: 10, category: "esportes", size: "",    label: "Substituir — esportes 04" },
   ];
 
-  const gallery = document.getElementById("gallery");
+  /* ============================================================
+   Gallery
+   Carrega as fotos do data/gallery.json
+   ============================================================ */
 
-  function renderGallery(){
-    gallery.innerHTML = GALLERY_ITEMS.map(item => `
-      <figure class="gallery-item${item.size ? " size-" + item.size : ""}" data-category="${item.category}" data-id="${item.id}" tabindex="0" role="button" aria-label="Ampliar fotografia: ${item.label}">
-        <div class="ph" data-ph-label="${item.label}"></div>
-        <figcaption class="gallery-caption">${labelToCaption(item.category)}</figcaption>
-      </figure>
-    `).join("");
+const gallery = document.getElementById("gallery");
+
+let GALLERY_ITEMS = [];
+
+function labelToCaption(cat){
+  const map = {
+    esportes: "Esportes",
+    eventos: "Eventos",
+    retratos: "Retratos"
+  };
+
+  return map[cat] || cat;
+}
+
+async function loadGallery(){
+
+  try {
+
+    const response = await fetch("data/gallery.json");
+
+    if(!response.ok){
+      throw new Error("Não foi possível carregar as fotos.");
+    }
+
+    GALLERY_ITEMS = await response.json();
+
+    renderGallery();
+
+  } catch(error) {
+
+    console.error("Erro ao carregar galeria:", error);
+
+    gallery.innerHTML = `
+      <p style="padding: 20px;">
+        Não foi possível carregar as fotografias.
+      </p>
+    `;
+
   }
 
-  function labelToCaption(cat){
-    const map = { esportes: "Esportes", eventos: "Eventos", retratos: "Retratos" };
-    return map[cat] || cat;
-  }
+}
 
-  renderGallery();
+function renderGallery(){
+
+  gallery.innerHTML = GALLERY_ITEMS.map(item => `
+
+    <figure
+      class="gallery-item${item.size ? " size-" + item.size : ""}"
+      data-category="${item.category}"
+      data-id="${item.id}"
+      tabindex="0"
+      role="button"
+      aria-label="Ampliar fotografia: ${item.alt || labelToCaption(item.category)}"
+    >
+
+      <img
+        src="${item.image}"
+        alt="${item.alt || labelToCaption(item.category)}"
+        loading="lazy"
+      >
+
+      <figcaption class="gallery-caption">
+        ${labelToCaption(item.category)}
+      </figcaption>
+
+    </figure>
+
+  `).join("");
+
+}
+
+loadGallery();
 
   /* ============================================================
      Header — solid on scroll
@@ -120,13 +180,26 @@
     document.body.style.overflow = "";
   }
 
-  function updateLightbox(){
-    const item = visibleItems[currentIndex];
-    if(!item) return;
-    const label = item.querySelector(".ph").dataset.phLabel;
-    lightboxMedia.dataset.phLabel = label;
-    lightboxCaption.textContent = labelToCaption(item.dataset.category);
-  }
+ function updateLightbox(){
+
+  const item = visibleItems[currentIndex];
+
+  if(!item) return;
+
+  const image = item.querySelector("img");
+
+  if(!image) return;
+
+  lightboxMedia.innerHTML = `
+    <img
+      src="${image.src}"
+      alt="${image.alt}"
+    >
+  `;
+
+  lightboxCaption.textContent =
+    labelToCaption(item.dataset.category);
+}
 
   function showNext(dir){
     if(!visibleItems.length) return;
