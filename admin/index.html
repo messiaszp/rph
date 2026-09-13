@@ -99,6 +99,9 @@
   <main class="admin">
 
     <h1>Painel do fotógrafo</h1>
+    <button id="logout-button" type="button">
+  Sair
+</button>
 
     <p class="subtitle">
       Gerenciamento de fotos — Rodrigo Fotografia
@@ -155,7 +158,15 @@
   </script>
 
 
-  <script>
+  <script type="module">
+    import { logout } from "https://esm.sh/@netlify/identity";
+
+const logoutButton = document.getElementById("logout-button");
+
+logoutButton.addEventListener("click", async () => {
+  await logout();
+  window.location.href = "/login/";
+});
 
     const status = document.getElementById("status");
     const uploadedImage = document.getElementById("uploaded_image");
