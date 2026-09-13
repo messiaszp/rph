@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Painel — Rodrigo Fotografia</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #121110;
+      color: #ece8e0;
+      font-family: Inter, Arial, sans-serif;
+      padding: 40px 20px;
+    }
+
+    .admin {
+      width: min(900px, 100%);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-family: Georgia, serif;
+      font-weight: 400;
+      font-size: 2.2rem;
+    }
+
+    .subtitle {
+      margin: 0 0 40px;
+      color: #a39c8e;
+    }
+
+    .panel {
+      background: #1a1815;
+      border: 1px solid rgba(236, 232, 224, 0.14);
+      padding: 30px;
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-family: Georgia, serif;
+      font-weight: 400;
+    }
+
+    .panel p {
+      color: #a39c8e;
+      margin-bottom: 25px;
+    }
+
+    #upload_widget {
+      border: 1px solid #ab8f63;
+      background: transparent;
+      color: #ece8e0;
+      padding: 13px 24px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    #upload_widget:hover {
+      background: #ab8f63;
+      color: #121110;
+    }
+
+    #status {
+      margin-top: 25px;
+      color: #a39c8e;
+    }
+
+    .uploaded-image {
+      margin-top: 30px;
+      display: none;
+    }
+
+    .uploaded-image img {
+      display: block;
+      width: 220px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .uploaded-image p {
+      margin-top: 10px;
+      word-break: break-all;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="admin">
+
+    <h1>Painel do fotógrafo</h1>
+
+    <p class="subtitle">
+      Gerenciamento de fotos — Rodrigo Fotografia
+    </p>
+
+    <section class="panel">
+
+      <h2>Adicionar fotos</h2>
+
+      <p>
+        Selecione uma ou várias imagens para enviar para o Cloudinary.
+      </p>
+
+      <button id="upload_widget">
+        + Adicionar fotos
+      </button>
+
+      <div id="status"></div>
+
+      <div class="uploaded-image" id="uploaded_image">
+        <img id="preview" src="" alt="Foto enviada">
+        <p id="image_info"></p>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- Cloudinary Upload Widget -->
+  <script
+    src="https://upload-widget.cloudinary.com/global/all.js"
+    type="text/javascript">
+  </script>
+
+
+  <script>
+
+    const status = document.getElementById("status");
+    const uploadedImage = document.getElementById("uploaded_image");
+    const preview = document.getElementById("preview");
+    const imageInfo = document.getElementById("image_info");
+
+    const myWidget = cloudinary.createUploadWidget(
+
+      {
+        cloudName: "fu66mxxo",
+
+        uploadPreset: "rodrigo_photos",
+
+        multiple: true,
+
+        maxFiles: 20,
+
+        clientAllowedFormats: [
+          "jpg",
+          "jpeg",
+          "png",
+          "webp"
+        ],
+
+        maxImageFileSize: 10000000,
+
+        sources: [
+          "local",
+          "camera"
+        ]
+      },
+
+      (error, result) => {
+
+        if (error) {
+          console.error(error);
+
+          status.textContent =
+            "Ocorreu um erro durante o upload.";
+
+          return;
+        }
+
+
+        if (result.event === "upload-added") {
+
+          status.textContent =
+            "Foto adicionada. Aguarde o upload...";
+        }
+
+
+        if (result.event === "success") {
+
+          console.log("Upload realizado:", result.info);
+
+          status.textContent =
+            "Foto enviada com sucesso!";
+
+          preview.src = result.info.secure_url;
+
+          imageInfo.textContent =
+            result.info.original_filename;
+
+          uploadedImage.style.display = "block";
+        }
+
+
+        if (result.event === "close") {
+
+          console.log("Widget fechado.");
+        }
+
+      }
+
+    );
+
+
+    document
+      .getElementById("upload_widget")
+      .addEventListener("click", function () {
+
+        myWidget.open();
+
+      }, false);
+
+  </script>
+
+</body>
+</html>
