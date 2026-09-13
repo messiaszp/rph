@@ -300,12 +300,12 @@ section{ padding: clamp(72px, 12vw, 140px) var(--gutter); }
 .about-photo{ aspect-ratio: 4 / 5; }
 .about h2{ color: var(--ink-dark); }
 .about .lead{ font-size: 1.2rem;
-            font-family: "Cormorant Garamond", serif;
-            font-weight: 800;}
+            font-family: "Playfair Display", serif;
+            font-weight: 500;}
 .about-copy p{ color: var(--ink-dark-soft); max-width: 56ch; }
 .about-note{ font-size: 1.2rem;
-           font-family: "Cormorant Garamond", serif;
-           font-weight: 800;}
+           font-family: "Playfair Display", serif;
+           font-weight: 500;}
 .about-facts{
   margin-top: 32px;
   border-top: 1px solid var(--paper-line);
