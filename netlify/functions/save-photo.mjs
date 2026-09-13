@@ -1,14 +1,45 @@
 import { getStore } from "@netlify/blobs";
+import { getUser } from "@netlify/identity";
 
 export default async (request) => {
+
   if (request.method !== "POST") {
     return Response.json(
-      { success: false, message: "Método não permitido" },
+      {
+        success: false,
+        message: "Método não permitido"
+      },
       { status: 405 }
     );
   }
 
   try {
+
+    // Verificar autenticação
+    const user = await getUser();
+
+    if (!user) {
+      return Response.json(
+        {
+          success: false,
+          message: "Usuário não autenticado"
+        },
+        { status: 401 }
+      );
+    }
+
+    // Verificar role de administrador
+    if (!user.roles || !user.roles.includes("admin")) {
+      return Response.json(
+        {
+          success: false,
+          message: "Acesso negado"
+        },
+        { status: 403 }
+      );
+    }
+
+    // Dados enviados pelo painel
     const data = await request.json();
 
     const store = getStore("gallery");
@@ -32,6 +63,7 @@ export default async (request) => {
     });
 
   } catch (error) {
+
     console.error(error);
 
     return Response.json(
@@ -41,5 +73,7 @@ export default async (request) => {
       },
       { status: 500 }
     );
+
   }
+
 };
