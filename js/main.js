@@ -1,318 +1,479 @@
-(() => {
-  "use strict";
+document.addEventListener("DOMContentLoaded", () => {
 
-  /* ============================================================
-     Gallery data
-     Replace `label` with a real caption and swap the placeholder
-     rendering (see renderGallery) for an <img> tag once real
-     photographs are available. `size` controls the grid shape:
-     'lg' | 'sm' | 'wide' | '' (default = half width)
-     ============================================================ */
-  const GALLERY_ITEMS = [
-    { id: 1, category: "esportes", size: "lg",   label: "Substituir — esportes 01" },
-    { id: 2, category: "retratos", size: "sm",   label: "Substituir — retrato 01" },
-    { id: 3, category: "eventos",  size: "sm",   label: "Substituir — evento 01" },
-    { id: 4, category: "esportes", size: "",     label: "Substituir — esportes 02" },
-    { id: 5, category: "retratos", size: "",     label: "Substituir — retrato 02" },
-    { id: 6, category: "eventos",  size: "wide", label: "Substituir — evento 02" },
-    { id: 7, category: "retratos", size: "lg",   label: "Substituir — retrato 03" },
-    { id: 8, category: "esportes", size: "sm",   label: "Substituir — esportes 03" },
-    { id: 9, category: "eventos",  size: "sm",   label: "Substituir — evento 03" },
-    { id: 10, category: "esportes", size: "",    label: "Substituir — esportes 04" },
-  ];
+  /* =========================================================
+     GALERIA
+  ========================================================= */
 
-  /* ============================================================
-   Gallery
-   Carrega as fotos do data/gallery.json
-   ============================================================ */
+  const gallery = document.getElementById("gallery");
 
-const gallery = document.getElementById("gallery");
-
-let GALLERY_ITEMS = [];
-
-function labelToCaption(cat){
-  const map = {
-    esportes: "Esportes",
-    eventos: "Eventos",
-    retratos: "Retratos"
-  };
-
-  return map[cat] || cat;
-}
-
-async function loadGallery(){
-
-  try {
-
-    const response = await fetch("data/gallery.json");
-
-    if(!response.ok){
-      throw new Error("Não foi possível carregar as fotos.");
-    }
-
-    GALLERY_ITEMS = await response.json();
-
-    renderGallery();
-
-  } catch(error) {
-
-    console.error("Erro ao carregar galeria:", error);
-
-    gallery.innerHTML = `
-      <p style="padding: 20px;">
-        Não foi possível carregar as fotografias.
-      </p>
-    `;
-
-  }
-
-}
-
-function renderGallery(){
-
-  gallery.innerHTML = GALLERY_ITEMS.map(item => `
-
-    <figure
-      class="gallery-item${item.size ? " size-" + item.size : ""}"
-      data-category="${item.category}"
-      data-id="${item.id}"
-      tabindex="0"
-      role="button"
-      aria-label="Ampliar fotografia: ${item.alt || labelToCaption(item.category)}"
-    >
-
-      <img
-        src="${item.image}"
-        alt="${item.alt || labelToCaption(item.category)}"
-        loading="lazy"
-      >
-
-      <figcaption class="gallery-caption">
-        ${labelToCaption(item.category)}
-      </figcaption>
-
-    </figure>
-
-  `).join("");
-
-}
-
-loadGallery();
-
-  /* ============================================================
-     Header — solid on scroll
-     ============================================================ */
-  const header = document.querySelector(".site-header");
-  const onScroll = () => {
-    header.classList.toggle("is-scrolled", window.scrollY > 40);
-  };
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
-
-  /* ============================================================
-     Mobile menu
-     ============================================================ */
-  const menuToggle = document.querySelector(".menu-toggle");
-  const navMobile = document.getElementById("menu-mobile");
-
-  menuToggle.addEventListener("click", () => {
-    const isOpen = navMobile.classList.toggle("is-open");
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
-    menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
-  });
-
-  navMobile.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => {
-      navMobile.classList.remove("is-open");
-      menuToggle.setAttribute("aria-expanded", "false");
-      menuToggle.setAttribute("aria-label", "Abrir menu");
-    });
-  });
-
-  /* ============================================================
-     Portfolio filter
-     ============================================================ */
-  const filterBtns = document.querySelectorAll(".filter-btn");
-  filterBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach(b => { b.classList.remove("is-active"); b.setAttribute("aria-selected", "false"); });
-      btn.classList.add("is-active");
-      btn.setAttribute("aria-selected", "true");
-
-      const filter = btn.dataset.filter;
-      document.querySelectorAll(".gallery-item").forEach(item => {
-        const match = filter === "all" || item.dataset.category === filter;
-        item.classList.toggle("is-hidden", !match);
-      });
-    });
-  });
-
-  /* ============================================================
-     Lightbox
-     ============================================================ */
-  const lightbox = document.getElementById("lightbox");
-  const lightboxMedia = document.getElementById("lightbox-media");
-  const lightboxCaption = document.getElementById("lightbox-caption");
-  const lightboxClose = document.getElementById("lightbox-close");
-  const lightboxPrev = document.getElementById("lightbox-prev");
-  const lightboxNext = document.getElementById("lightbox-next");
-
+  let galleryData = [];
   let visibleItems = [];
   let currentIndex = 0;
 
-  function getVisibleItems(){
-    return Array.from(document.querySelectorAll(".gallery-item:not(.is-hidden)"));
+  function labelToCaption(category) {
+    const map = {
+      esportes: "Esportes",
+      eventos: "Eventos",
+      retratos: "Retratos"
+    };
+
+    return map[category] || category;
   }
 
-  function openLightbox(index){
-    visibleItems = getVisibleItems();
-    currentIndex = index;
-    updateLightbox();
-    lightbox.classList.add("is-open");
-    lightbox.setAttribute("aria-hidden", "false");
-    lightboxClose.focus();
-    document.body.style.overflow = "hidden";
-  }
+  async function loadGallery() {
+    try {
+      const response = await fetch("data/gallery.json");
 
-  function closeLightbox(){
-    lightbox.classList.remove("is-open");
-    lightbox.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-  }
+      if (!response.ok) {
+        throw new Error("Não foi possível carregar gallery.json");
+      }
 
- function updateLightbox(){
+      galleryData = await response.json();
 
-  const item = visibleItems[currentIndex];
+      renderGallery();
 
-  if(!item) return;
+    } catch (error) {
+      console.error("Erro ao carregar galeria:", error);
 
-  const image = item.querySelector("img");
-
-  if(!image) return;
-
-  lightboxMedia.innerHTML = `
-    <img
-      src="${image.src}"
-      alt="${image.alt}"
-    >
-  `;
-
-  lightboxCaption.textContent =
-    labelToCaption(item.dataset.category);
-}
-
-  function showNext(dir){
-    if(!visibleItems.length) return;
-    currentIndex = (currentIndex + dir + visibleItems.length) % visibleItems.length;
-    updateLightbox();
-  }
-
-  gallery.addEventListener("click", (e) => {
-    const item = e.target.closest(".gallery-item");
-    if(!item) return;
-    const items = getVisibleItems();
-    openLightbox(items.indexOf(item));
-  });
-
-  gallery.addEventListener("keydown", (e) => {
-    if((e.key === "Enter" || e.key === " ") && e.target.classList.contains("gallery-item")){
-      e.preventDefault();
-      const items = getVisibleItems();
-      openLightbox(items.indexOf(e.target));
+      gallery.innerHTML = `
+        <p style="padding: 20px;">
+          Não foi possível carregar as fotografias.
+        </p>
+      `;
     }
-  });
-
-  lightboxClose.addEventListener("click", closeLightbox);
-  lightboxPrev.addEventListener("click", () => showNext(-1));
-  lightboxNext.addEventListener("click", () => showNext(1));
-  lightbox.addEventListener("click", (e) => { if(e.target === lightbox) closeLightbox(); });
-
-  document.addEventListener("keydown", (e) => {
-    if(!lightbox.classList.contains("is-open")) return;
-    if(e.key === "Escape") closeLightbox();
-    if(e.key === "ArrowLeft") showNext(-1);
-    if(e.key === "ArrowRight") showNext(1);
-  });
-
-  /* ============================================================
-     Scroll reveal — sections only, one subtle pass
-     ============================================================ */
-  const revealTargets = document.querySelectorAll(".about-grid, .section-head, .service-row, .contact-grid");
-  revealTargets.forEach(el => el.classList.add("reveal"));
-
-  if("IntersectionObserver" in window){
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting){
-          entry.target.classList.add("is-visible");
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    revealTargets.forEach(el => io.observe(el));
-  } else {
-    revealTargets.forEach(el => el.classList.add("is-visible"));
   }
 
-  /* ============================================================
-     Contact — WhatsApp / Instagram / e-mail placeholders
-     Fill in the real values below; the site will wire the links
-     automatically once populated.
-     ============================================================ */
+  function renderGallery() {
+
+    gallery.innerHTML = galleryData.map(item => `
+      <figure
+        class="gallery-item${item.size ? " size-" + item.size : ""}"
+        data-category="${item.category}"
+        data-id="${item.id}"
+        tabindex="0"
+        role="button"
+        aria-label="Ampliar fotografia"
+      >
+
+        <img
+          src="${item.image}"
+          alt="${item.alt || "Fotografia"}"
+          loading="lazy"
+        >
+
+        <figcaption class="gallery-caption">
+          ${labelToCaption(item.category)}
+        </figcaption>
+
+      </figure>
+    `).join("");
+
+    setupGalleryEvents();
+    updateVisibleItems();
+  }
+
+  function setupGalleryEvents() {
+
+    document.querySelectorAll(".gallery-item").forEach(item => {
+
+      item.addEventListener("click", () => {
+        openLightbox(item);
+      });
+
+      item.addEventListener("keydown", event => {
+
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openLightbox(item);
+        }
+
+      });
+
+    });
+
+  }
+
+
+  /* =========================================================
+     FILTROS
+  ========================================================= */
+
+  const filterButtons = document.querySelectorAll(".filter-btn");
+
+  filterButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      filterButtons.forEach(btn => {
+        btn.classList.remove("is-active");
+      });
+
+      button.classList.add("is-active");
+
+      const filter = button.dataset.filter;
+
+      document.querySelectorAll(".gallery-item").forEach(item => {
+
+        if (filter === "all" || item.dataset.category === filter) {
+          item.style.display = "";
+        } else {
+          item.style.display = "none";
+        }
+
+      });
+
+      updateVisibleItems();
+
+    });
+
+  });
+
+
+  function updateVisibleItems() {
+
+    visibleItems = Array.from(
+      document.querySelectorAll(".gallery-item")
+    ).filter(item => {
+      return item.style.display !== "none";
+    });
+
+  }
+
+
+  /* =========================================================
+     LIGHTBOX
+  ========================================================= */
+
+  const lightbox = document.getElementById("lightbox");
+
+  const lightboxMedia = document.getElementById("lightboxMedia");
+  const lightboxCaption = document.getElementById("lightboxCaption");
+
+  const lightboxClose = document.getElementById("lightboxClose");
+  const lightboxPrev = document.getElementById("lightboxPrev");
+  const lightboxNext = document.getElementById("lightboxNext");
+
+
+  function openLightbox(item) {
+
+    updateVisibleItems();
+
+    currentIndex = visibleItems.indexOf(item);
+
+    if (currentIndex < 0) {
+      currentIndex = 0;
+    }
+
+    updateLightbox();
+
+    lightbox.classList.add("is-open");
+    document.body.classList.add("no-scroll");
+
+  }
+
+
+  function closeLightbox() {
+
+    lightbox.classList.remove("is-open");
+    document.body.classList.remove("no-scroll");
+
+  }
+
+
+  function updateLightbox() {
+
+    const item = visibleItems[currentIndex];
+
+    if (!item) return;
+
+    const image = item.querySelector("img");
+
+    if (!image) return;
+
+    lightboxMedia.innerHTML = `
+      <img
+        src="${image.src}"
+        alt="${image.alt || "Fotografia"}"
+      >
+    `;
+
+    lightboxCaption.textContent =
+      labelToCaption(item.dataset.category);
+
+  }
+
+
+  function nextLightbox() {
+
+    if (!visibleItems.length) return;
+
+    currentIndex =
+      (currentIndex + 1) % visibleItems.length;
+
+    updateLightbox();
+
+  }
+
+
+  function prevLightbox() {
+
+    if (!visibleItems.length) return;
+
+    currentIndex =
+      (currentIndex - 1 + visibleItems.length) %
+      visibleItems.length;
+
+    updateLightbox();
+
+  }
+
+
+  if (lightboxClose) {
+    lightboxClose.addEventListener("click", closeLightbox);
+  }
+
+  if (lightboxNext) {
+    lightboxNext.addEventListener("click", nextLightbox);
+  }
+
+  if (lightboxPrev) {
+    lightboxPrev.addEventListener("click", prevLightbox);
+  }
+
+
+  if (lightbox) {
+
+    lightbox.addEventListener("click", event => {
+
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+
+    });
+
+  }
+
+
+  document.addEventListener("keydown", event => {
+
+    if (!lightbox.classList.contains("is-open")) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      closeLightbox();
+    }
+
+    if (event.key === "ArrowRight") {
+      nextLightbox();
+    }
+
+    if (event.key === "ArrowLeft") {
+      prevLightbox();
+    }
+
+  });
+
+
+  /* =========================================================
+     HEADER
+  ========================================================= */
+
+  const header = document.querySelector("header");
+
+  function updateHeader() {
+
+    if (!header) return;
+
+    if (window.scrollY > 30) {
+      header.classList.add("is-scrolled");
+    } else {
+      header.classList.remove("is-scrolled");
+    }
+
+  }
+
+  window.addEventListener("scroll", updateHeader);
+
+  updateHeader();
+
+
+  /* =========================================================
+     MENU MOBILE
+  ========================================================= */
+
+  const menuToggle =
+    document.querySelector(".menu-toggle");
+
+  const nav =
+    document.querySelector(".nav");
+
+  if (menuToggle && nav) {
+
+    menuToggle.addEventListener("click", () => {
+
+      nav.classList.toggle("is-open");
+
+    });
+
+  }
+
+
+  /* =========================================================
+     REVEAL AO ROLAR
+  ========================================================= */
+
+  const revealElements =
+    document.querySelectorAll(".reveal");
+
+  if ("IntersectionObserver" in window) {
+
+    const observer = new IntersectionObserver(
+      entries => {
+
+        entries.forEach(entry => {
+
+          if (entry.isIntersecting) {
+
+            entry.target.classList.add("is-visible");
+
+            observer.unobserve(entry.target);
+
+          }
+
+        });
+
+      },
+      {
+        threshold: 0.1
+      }
+    );
+
+    revealElements.forEach(element => {
+      observer.observe(element);
+    });
+
+  } else {
+
+    revealElements.forEach(element => {
+      element.classList.add("is-visible");
+    });
+
+  }
+
+
+  /* =========================================================
+     CONTATOS
+  ========================================================= */
+
   const CONTACT = {
-    whatsappNumber: "",   // e.g. "5588999999999" (DDI+DDD+numero, only digits)
-    instagramHandle: "",  // e.g. "rodrigojr.foto"
-    email: "",             // e.g. "contato@rodrigofotos.com"
+    whatsappNumber: "",
+    instagramHandle: "",
+    email: ""
   };
 
-  const whatsappLink = document.getElementById("whatsapp-link");
-  const instagramLink = document.getElementById("instagram-link");
-  const emailLink = document.getElementById("email-link");
 
-  if(CONTACT.whatsappNumber){
-    whatsappLink.href = `https://wa.me/${CONTACT.whatsappNumber}`;
-    whatsappLink.textContent = "Conversar agora";
-    whatsappLink.target = "_blank";
-    whatsappLink.rel = "noopener";
-  }
-  if(CONTACT.instagramHandle){
-    instagramLink.href = `https://instagram.com/${CONTACT.instagramHandle}`;
-    instagramLink.textContent = `@${CONTACT.instagramHandle}`;
-    instagramLink.target = "_blank";
-    instagramLink.rel = "noopener";
-  }
-  if(CONTACT.email){
-    emailLink.href = `mailto:${CONTACT.email}`;
-    emailLink.textContent = CONTACT.email;
-  }
+  const whatsappLinks =
+    document.querySelectorAll("[data-whatsapp]");
 
-  /* ============================================================
-     Contact form
-     Submits to Netlify Forms (data-netlify on the <form>). Update
-     the form's `action`/backend if hosting elsewhere.
-     ============================================================ */
-  const form = document.getElementById("contact-form");
-  const formNote = document.getElementById("form-note");
+  whatsappLinks.forEach(link => {
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    formNote.textContent = "Enviando…";
+    if (CONTACT.whatsappNumber) {
 
-    const data = new FormData(form);
-    const encoded = new URLSearchParams(data).toString();
+      link.href =
+        `https://wa.me/${CONTACT.whatsappNumber}`;
 
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: encoded,
-    })
-      .then(() => {
-        formNote.textContent = "Mensagem enviada. Obrigado pelo contato!";
-        form.reset();
-      })
-      .catch(() => {
-        formNote.textContent = "Não foi possível enviar agora — tente novamente ou use o WhatsApp.";
-      });
+    }
+
   });
 
-})();
+
+  const instagramLinks =
+    document.querySelectorAll("[data-instagram]");
+
+  instagramLinks.forEach(link => {
+
+    if (CONTACT.instagramHandle) {
+
+      link.href =
+        `https://instagram.com/${CONTACT.instagramHandle}`;
+
+    }
+
+  });
+
+
+  const emailLinks =
+    document.querySelectorAll("[data-email]");
+
+  emailLinks.forEach(link => {
+
+    if (CONTACT.email) {
+
+      link.href =
+        `mailto:${CONTACT.email}`;
+
+    }
+
+  });
+
+
+  /* =========================================================
+     FORMULÁRIO NETLIFY
+  ========================================================= */
+
+  const form =
+    document.querySelector("form[name='contact']");
+
+  if (form) {
+
+    form.addEventListener("submit", async event => {
+
+      event.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+
+        const response = await fetch("/", {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/x-www-form-urlencoded"
+          },
+          body:
+            new URLSearchParams(formData).toString()
+        });
+
+        if (response.ok) {
+
+          form.reset();
+
+          alert("Mensagem enviada com sucesso!");
+
+        } else {
+
+          alert("Não foi possível enviar a mensagem.");
+
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("Ocorreu um erro ao enviar a mensagem.");
+
+      }
+
+    });
+
+  }
+
+
+  /* =========================================================
+     INICIAR
+  ========================================================= */
+
+  loadGallery();
+
+});
