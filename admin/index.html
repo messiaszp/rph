@@ -329,28 +329,38 @@
   </p>
 
   <label>
-    Categoria:
-    <select class="edit-category">
-      <option value="eventos" ${photo.category === "eventos" ? "selected" : ""}>
-        Eventos
-      </option>
+  Categoria:
+  <select class="edit-category">
+    <option value="eventos" ${photo.category === "eventos" ? "selected" : ""}>
+      Eventos
+    </option>
+    <option value="esportes" ${photo.category === "esportes" ? "selected" : ""}>
+      Esportes
+    </option>
+    <option value="retratos" ${photo.category === "retratos" ? "selected" : ""}>
+      Retratos
+    </option>
+  </select>
+</label>
 
-      <option value="esportes" ${photo.category === "esportes" ? "selected" : ""}>
-        Esportes
-      </option>
+<label>
+  Tamanho:
+  <select class="edit-size">
+    <option value="lg" ${photo.size === "lg" ? "selected" : ""}>
+      Grande
+    </option>
+    <option value="sm" ${photo.size === "sm" ? "selected" : ""}>
+      Pequena
+    </option>
+    <option value="wide" ${photo.size === "wide" ? "selected" : ""}>
+      Larga
+    </option>
+  </select>
+</label>
 
-      <option value="retratos" ${photo.category === "retratos" ? "selected" : ""}>
-        Retratos
-      </option>
-    </select>
-  </label>
-
-  <button
-    type="button"
-    class="save-category"
-  >
-    Salvar categoria
-  </button>
+<button type="button" class="save-photo">
+  Salvar alterações
+</button>
 
   <button
     type="button"
@@ -415,14 +425,13 @@ deleteButton.addEventListener("click", async () => {
 
 });
 const categorySelect = item.querySelector(".edit-category");
-const saveCategoryButton = item.querySelector(".save-category");
+const sizeSelect = item.querySelector(".edit-size");
+const savePhotoButton = item.querySelector(".save-photo");
 
-saveCategoryButton.addEventListener("click", async () => {
-
+savePhotoButton.addEventListener("click", async () => {
   try {
-
-    saveCategoryButton.disabled = true;
-    saveCategoryButton.textContent = "Salvando...";
+    savePhotoButton.disabled = true;
+    savePhotoButton.textContent = "Salvando...";
 
     const response = await fetch(
       "/.netlify/functions/update-photo",
@@ -433,7 +442,8 @@ saveCategoryButton.addEventListener("click", async () => {
         },
         body: JSON.stringify({
           id: photo.id,
-          category: categorySelect.value
+          category: categorySelect.value,
+          size: sizeSelect.value
         })
       }
     );
@@ -441,29 +451,25 @@ saveCategoryButton.addEventListener("click", async () => {
     const data = await response.json();
 
     if (!data.success) {
-      alert("Não foi possível atualizar a categoria.");
+      alert("Não foi possível atualizar a foto.");
       return;
     }
 
-    saveCategoryButton.textContent = "Salvo!";
+    savePhotoButton.textContent = "Salvo!";
 
     setTimeout(() => {
-      saveCategoryButton.textContent = "Salvar categoria";
+      savePhotoButton.textContent = "Salvar alterações";
     }, 1500);
 
   } catch (error) {
-
     console.error(error);
-
-    alert("Erro ao atualizar a categoria.");
+    alert("Erro ao atualizar a foto.");
 
   } finally {
-
-    saveCategoryButton.disabled = false;
-
+    savePhotoButton.disabled = false;
   }
-
 });
+      
     });
 
   } catch (error) {
