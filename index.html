@@ -25,6 +25,19 @@
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <script type="module">
+  import { handleAuthCallback } from "https://esm.sh/@netlify/identity";
+
+  if (
+    window.location.hash.includes("recovery_token") ||
+    window.location.hash.includes("invite_token") ||
+    window.location.hash.includes("confirmation_token") ||
+    window.location.hash.includes("email_change_token")
+  ) {
+    window.location.href =
+      "/login/" + window.location.hash;
+  }
+</script>
 
 <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
