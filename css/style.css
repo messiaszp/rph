@@ -152,6 +152,7 @@ img, .ph{ display:block; max-width:100%; }
   position: relative;
   padding: 4px 0;
   transition: color .3s var(--ease);
+  font-family: var(--serif);
 }
 .nav-desktop a:hover{ color: var(--ink); }
 .nav-desktop a::after{
@@ -188,6 +189,7 @@ img, .ph{ display:block; max-width:100%; }
   border-top: 1px solid var(--line-dark);
   font-family: var(--serif);
   font-size: 1.2rem;
+  font-family: var(--serif);
 }
 
 /* ==========================================================================
