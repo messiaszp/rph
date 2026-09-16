@@ -7,17 +7,22 @@ export default async () => {
     const { blobs } = await store.list();
 
     const photos = await Promise.all(
-      blobs.map(async (blob) => {
-        return await store.get(blob.key, {
-          type: "json"
-        });
-      })
-    );
+  blobs.map(async (blob) => {
+    return await store.get(blob.key, {
+      type: "json"
+    });
+  })
+);
+
+const publishedPhotos =
+  photos.filter(
+    photo => photo && photo.published !== false
+  );
 
     return Response.json({
-      success: true,
-      photos
-    });
+  success: true,
+  photos: publishedPhotos
+});
 
   } catch (error) {
     console.error(error);
