@@ -476,10 +476,95 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  /* =========================================================
-     INICIAR
-  ========================================================= */
+/* =========================================================
+   IMAGEM DO SOBRE
+========================================================= */
 
-  loadGallery();
+async function loadAboutImage() {
+
+  try {
+
+    const response =
+      await fetch(
+        "/.netlify/functions/get-site-images"
+      );
+
+
+    if (!response.ok) {
+      return;
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !data.success ||
+      !data.about ||
+      !data.about.image
+    ) {
+      return;
+    }
+
+
+    const aboutPhoto =
+      document.querySelector(".about-photo");
+
+
+    if (!aboutPhoto) {
+      return;
+    }
+
+
+    aboutPhoto.classList.remove("ph");
+
+    aboutPhoto.removeAttribute(
+      "data-ph-label"
+    );
+
+
+    aboutPhoto.innerHTML = "";
+
+
+    const image =
+      document.createElement("img");
+
+
+    image.src =
+      data.about.image;
+
+
+    image.alt =
+      "Fotografia de Rodrigo";
+
+
+    image.loading =
+      "lazy";
+
+
+    aboutPhoto.appendChild(image);
+
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao carregar foto do Sobre:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+loadGallery();
+
+loadAboutImage();
 
 });
+
