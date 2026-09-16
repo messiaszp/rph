@@ -68,9 +68,13 @@ export default async (request) => {
     }
 
     photo.category = data.category || photo.category;
-    photo.size = data.size || photo.size || "lg";
+photo.size = data.size || photo.size || "lg";
 
-    photo.alt = `Foto de ${photo.category}`;
+if (typeof data.published === "boolean") {
+  photo.published = data.published;
+}
+
+photo.alt = `Foto de ${photo.category}`;
 
     await store.setJSON(data.id, photo);
 
