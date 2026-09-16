@@ -1000,6 +1000,31 @@ photoFiles.addEventListener(
 
               </div>
 
+        <div class="photo-field">
+
+  <label>
+    Mostrar no site
+  </label>
+
+  <select class="edit-published">
+
+    <option
+      value="true"
+      ${photo.published !== false ? "selected" : ""}
+    >
+      Sim
+    </option>
+
+    <option
+      value="false"
+      ${photo.published === false ? "selected" : ""}
+    >
+      Não
+    </option>
+
+  </select>
+
+</div>
 
               <div class="photo-actions">
 
