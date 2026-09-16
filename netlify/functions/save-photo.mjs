@@ -52,7 +52,7 @@ export default async (request) => {
       filename: data.filename || "",
       category: data.category || "eventos",
       size: data.size || "",
-      alt: data.alt || "Fotografia"
+      alt: data.alt || "Fotografia",
       published: true
     };
 
