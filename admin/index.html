@@ -1075,10 +1075,10 @@ photoFiles.addEventListener(
               ".edit-size"
             );
 
-          const publishedSelect =
-  item.querySelector(
-    ".edit-published"
-  );
+         const publishedSelect =
+             item.querySelector(
+              ".edit-published"
+            );
 
 
           const savePhotoButton =
@@ -1207,20 +1207,15 @@ photoFiles.addEventListener(
                           "application/json"
                       },
 
-                     body: JSON.stringify({
-
-  id: photo.id,
-
-  category:
-    categorySelect.value,
-
-  size:
-    sizeSelect.value,
-
-  published:
-    publishedSelect.value === "true"
-
-})
+                    body: JSON.stringify({
+                      id: photo.id,
+                      category:
+                        categorySelect.value,
+                      size:
+                        sizeSelect.value,
+                      published:
+                        publishedSelect.value === "true"
+                        })
                     }
                   );
 
