@@ -1207,17 +1207,20 @@ photoFiles.addEventListener(
                           "application/json"
                       },
 
-                      body: JSON.stringify({
+                     body: JSON.stringify({
 
-                        id: photo.id,
+  id: photo.id,
 
-                        category:
-                          categorySelect.value,
+  category:
+    categorySelect.value,
 
-                        size:
-                          sizeSelect.value
+  size:
+    sizeSelect.value,
 
-                      })
+  published:
+    publishedSelect.value === "true"
+
+})
                     }
                   );
 
