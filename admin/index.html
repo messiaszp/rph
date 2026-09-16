@@ -526,13 +526,131 @@
   </div>
 
 
-  <div id="photos-list">
+   <div id="photos-list">
 
     <div class="loading-state">
       Carregando fotos...
     </div>
 
   </div>
+
+
+  <!-- =====================================================
+       IMAGENS DO SITE
+  ====================================================== -->
+
+  <div class="site-images-section">
+
+    <div class="section-header">
+
+      <div>
+
+        <h2>Imagens do site</h2>
+
+        <p>
+          Gerencie as imagens exibidas nas principais áreas do site.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="site-images-grid">
+
+
+      <!-- FOTO PRINCIPAL -->
+
+      <div class="site-image-card">
+
+        <h3>Foto principal</h3>
+
+        <p>
+          Imagem de destaque exibida na página inicial.
+        </p>
+
+        <div
+          id="hero-site-preview"
+          class="site-image-preview"
+        >
+
+          <span>
+            Nenhuma imagem definida
+          </span>
+
+        </div>
+
+        <input
+          id="hero-site-file"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+        >
+
+        <button
+          id="hero-site-button"
+          type="button"
+          class="secondary-button"
+        >
+          Escolher imagem
+        </button>
+
+        <div
+          id="hero-site-status"
+          class="site-image-status"
+        ></div>
+
+      </div>
+
+
+      <!-- FOTO SOBRE -->
+
+      <div class="site-image-card">
+
+        <h3>Foto do Sobre</h3>
+
+        <p>
+          Imagem exibida na seção Sobre.
+        </p>
+
+        <div
+          id="about-site-preview"
+          class="site-image-preview"
+        >
+
+          <span>
+            Nenhuma imagem definida
+          </span>
+
+        </div>
+
+        <input
+          id="about-site-file"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+        >
+
+        <button
+          id="about-site-button"
+          type="button"
+          class="secondary-button"
+        >
+          Escolher imagem
+        </button>
+
+        <div
+          id="about-site-status"
+          class="site-image-status"
+        ></div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
 
 </section>
 
@@ -1286,6 +1404,262 @@ photoFiles.addEventListener(
     }
 
 
+        /* =====================================================
+       IMAGENS DO SITE
+    ===================================================== */
+
+    const heroSiteButton =
+      document.getElementById("hero-site-button");
+
+    const heroSiteFile =
+      document.getElementById("hero-site-file");
+
+    const aboutSiteButton =
+      document.getElementById("about-site-button");
+
+    const aboutSiteFile =
+      document.getElementById("about-site-file");
+
+
+    if (heroSiteButton && heroSiteFile) {
+
+      heroSiteButton.addEventListener(
+        "click",
+        () => {
+          heroSiteFile.click();
+        }
+      );
+
+    }
+
+
+    if (aboutSiteButton && aboutSiteFile) {
+
+      aboutSiteButton.addEventListener(
+        "click",
+        () => {
+          aboutSiteFile.click();
+        }
+      );
+
+    }
+
+/* =====================================================
+   FOTO DO SOBRE
+===================================================== */
+
+if (aboutSiteFile && aboutSiteButton) {
+
+  aboutSiteFile.addEventListener(
+    "change",
+    async () => {
+
+      const file =
+        aboutSiteFile.files[0];
+
+      if (!file) {
+        return;
+      }
+
+
+      const status =
+        document.getElementById(
+          "about-site-status"
+        );
+
+      const preview =
+        document.getElementById(
+          "about-site-preview"
+        );
+
+
+      aboutSiteButton.disabled = true;
+
+      aboutSiteButton.textContent =
+        "Enviando...";
+
+      status.textContent =
+        "Preparando upload...";
+
+
+      try {
+
+        /*
+          1. Solicita URL assinada ao R2
+        */
+
+        const uploadResponse =
+          await fetch(
+            "/.netlify/functions/upload-r2",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                filename:
+                  file.name,
+
+                contentType:
+                  file.type
+              })
+            }
+          );
+
+
+        const uploadData =
+          await uploadResponse.json();
+
+
+        if (
+          !uploadResponse.ok ||
+          !uploadData.success
+        ) {
+
+          throw new Error(
+            uploadData.message ||
+            "Não foi possível preparar o upload."
+          );
+
+        }
+
+
+        status.textContent =
+          "Enviando imagem...";
+
+
+        /*
+          2. Envia a imagem diretamente para o R2
+        */
+
+        const r2Response =
+          await fetch(
+            uploadData.uploadUrl,
+            {
+              method: "PUT",
+
+              headers: {
+                "Content-Type":
+                  file.type
+              },
+
+              body: file
+            }
+          );
+
+
+        if (!r2Response.ok) {
+
+          throw new Error(
+            "Não foi possível enviar a imagem para o R2."
+          );
+
+        }
+
+
+        status.textContent =
+          "Salvando imagem...";
+
+
+        /*
+          3. Salva a imagem como FOTO DO SOBRE
+        */
+
+        const saveResponse =
+          await fetch(
+            "/.netlify/functions/save-site-image",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                slot: "about",
+
+                publicUrl:
+                  uploadData.publicUrl,
+
+                key:
+                  uploadData.key,
+
+                filename:
+                  file.name
+
+              })
+            }
+          );
+
+
+        const saveData =
+          await saveResponse.json();
+
+
+        if (
+          !saveResponse.ok ||
+          !saveData.success
+        ) {
+
+          throw new Error(
+            saveData.message ||
+            "Não foi possível salvar a imagem."
+          );
+
+        }
+
+
+        /*
+          4. Atualiza a prévia
+        */
+
+        preview.innerHTML = "";
+
+        const image =
+          document.createElement("img");
+
+        image.src =
+          uploadData.publicUrl;
+
+        image.alt =
+          "Foto do Sobre";
+
+        preview.appendChild(image);
+
+
+        status.textContent =
+          "Imagem atualizada com sucesso.";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+          error.message ||
+          "Erro ao enviar a imagem.";
+
+      } finally {
+
+        aboutSiteButton.disabled =
+          false;
+
+        aboutSiteButton.textContent =
+          "Escolher imagem";
+
+        aboutSiteFile.value = "";
+
+      }
+
+    }
+  );
+
+}
     /* =====================================================
        INICIAR
     ===================================================== */
@@ -1293,6 +1667,6 @@ photoFiles.addEventListener(
     loadPhotos();
 
   </script>
-
+  
 </body>
 </html>
