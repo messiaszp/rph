@@ -322,18 +322,38 @@ img, .ph{
   overflow:hidden;
 }
 
-.hero-media {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+/* FOTO OCUPA TODO O HERO */
+.hero-media{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  z-index:0;
 }
 
-.hero-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+.hero-media img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center center;
+}
+
+/* ESCURECE A FOTO PARA O TEXTO FICAR LEGÍVEL */
+.hero-scrim{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10,9,8,0.25) 0%,
+      rgba(10,9,8,0.10) 35%,
+      rgba(10,9,8,0.45) 65%,
+      rgba(10,9,8,0.88) 100%
+    );
 }
 
 .hero-scrim{
@@ -371,15 +391,21 @@ img, .ph{
   max-width: 14ch;
   opacity: 0;
   animation: rise 1s var(--ease) .3s forwards;
+
+  text-shadow:
+    0 3px 18px rgba(0,0,0,0.45);
 }
 
 .hero-lede{
   max-width: 46ch;
   font-size: 1.1rem;
-  color: var(--ink-soft);
+  color: var(--ink);
   margin-top: 10px;
   opacity: 0;
   animation: rise 1s var(--ease) .48s forwards;
+
+  text-shadow:
+    0 2px 12px rgba(0,0,0,0.55);
 }
 
 .hero-actions{
