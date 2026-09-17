@@ -477,6 +477,88 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
+/* =========================================================
+   IMAGEM PRINCIPAL — HERO
+========================================================= */
+
+async function loadHeroImage() {
+
+  try {
+
+    const response =
+      await fetch(
+        "/.netlify/functions/get-site-images"
+      );
+
+
+    if (!response.ok) {
+      return;
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !data.success ||
+      !data.hero ||
+      !data.hero.image
+    ) {
+      return;
+    }
+
+
+    const heroMedia =
+      document.querySelector(".hero-media");
+
+
+    if (!heroMedia) {
+      return;
+    }
+
+
+    heroMedia.classList.remove("ph");
+
+    heroMedia.removeAttribute(
+      "data-ph-label"
+    );
+
+
+    heroMedia.innerHTML = "";
+
+
+    const image =
+      document.createElement("img");
+
+
+    image.src =
+      data.hero.image;
+
+
+    image.alt =
+      "Fotografia de destaque";
+
+
+    image.loading =
+      "eager";
+
+
+    heroMedia.appendChild(
+      image
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao carregar foto principal:",
+      error
+    );
+
+  }
+
+}
 
 /* =========================================================
    IMAGEM DO SOBRE
