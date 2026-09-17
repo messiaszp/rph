@@ -78,21 +78,28 @@ export default async (request) => {
       HERO OU ABOUT
     */
 
-    if (
-      data.slot !== "hero" &&
-      data.slot !== "about"
-    ) {
+    const allowedSlots = [
+  "hero",
+  "about",
+  "service-esportes",
+  "service-eventos",
+  "service-retratos"
+];
 
-      return Response.json(
-        {
-          success: false,
-          message: "Local da imagem inválido"
-        },
-        { status: 400 }
-      );
 
-    }
+if (
+  !allowedSlots.includes(data.slot)
+) {
 
+  return Response.json(
+    {
+      success: false,
+      message: "Local da imagem inválido"
+    },
+    { status: 400 }
+  );
+
+}
 
     /*
       VERIFICAR DADOS DA IMAGEM
