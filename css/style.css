@@ -792,12 +792,6 @@ section{
   margin-bottom: 40px;
 }
 
-.contact-links {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-}
-
 .contact-links li {
   display: flex;
   flex-direction: column;
@@ -1083,9 +1077,6 @@ section{
     align-items:flex-start;
   }
    
-   .contact-links {
-  grid-template-columns: 1fr;
-   }
    
 }
 
