@@ -1988,9 +1988,99 @@ if (heroSiteFile && heroSiteButton) {
     /* =====================================================
        INICIAR
     ===================================================== */
+    async function loadSiteImages() {
 
+  try {
+
+    const response =
+      await fetch(
+        "/.netlify/functions/get-site-images"
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+      return;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    const heroPreview =
+      document.getElementById(
+        "hero-site-preview"
+      );
+
+    if (
+      data.hero &&
+      data.hero.image &&
+      heroPreview
+    ) {
+
+      heroPreview.innerHTML = "";
+
+      const image =
+        document.createElement("img");
+
+      image.src =
+        data.hero.image;
+
+      image.alt =
+        "Foto principal";
+
+      heroPreview.appendChild(
+        image
+      );
+    }
+
+
+    /* =========================
+       SOBRE
+    ========================= */
+
+    const aboutPreview =
+      document.getElementById(
+        "about-site-preview"
+      );
+
+    if (
+      data.about &&
+      data.about.image &&
+      aboutPreview
+    ) {
+
+      aboutPreview.innerHTML = "";
+
+      const image =
+        document.createElement("img");
+
+      image.src =
+        data.about.image;
+
+      image.alt =
+        "Foto do Sobre";
+
+      aboutPreview.appendChild(
+        image
+      );
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao carregar imagens do site:",
+      error
+    );
+
+  }
+
+}
+    loadSiteImages();
     loadPhotos();
-
+    
   </script>
   
 </body>
