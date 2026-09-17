@@ -653,8 +653,6 @@ async function loadAboutImage() {
 
   loadHeroImage();
 
-});
-
 
 });
 
