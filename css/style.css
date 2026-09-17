@@ -556,6 +556,7 @@ section{
 .about-copy p{
   color: var(--ink-dark-soft);
   max-width: 56ch;
+  font-family: inherit;
 }
 
 .about-note{
