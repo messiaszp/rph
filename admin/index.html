@@ -439,7 +439,72 @@
       color: var(--muted);
       font-size: 13px;
     }
+
+  /* =====================================================
+   SERVIÇOS
+===================================================== */
     
+    .services-admin-section {
+      margin-top: 42px;
+    }
+    
+    .services-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    
+    .service-admin-card {
+      min-width: 0;
+      padding: 22px;
+      border: 1px solid var(--border);
+      background: var(--panel-soft);
+    }
+    
+    .service-admin-card h3 {
+      margin: 0 0 6px;
+      font-family: Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+    }
+    
+    .service-admin-card > p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .service-admin-preview {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      background: #0e0d0c;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .service-admin-preview span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    
+    .service-admin-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .service-admin-status {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
     /* =====================================================
        RESPONSIVO
     ===================================================== */
@@ -490,6 +555,10 @@
       }
 
       .site-images-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .services-admin-grid {
         grid-template-columns: 1fr;
       }
 
@@ -749,6 +818,179 @@
 
 </div>
 
+  <!-- =====================================================
+     SERVIÇOS
+====================================================== -->
+
+<div class="services-admin-section">
+
+  <div class="section-header">
+
+    <h2>Serviços</h2>
+
+    <p>
+      Gerencie as imagens utilizadas em cada serviço.
+    </p>
+
+  </div>
+
+
+  <div class="services-admin-grid">
+
+
+    <!-- =================================================
+         ESPORTES
+    ================================================== -->
+
+    <div class="service-admin-card">
+
+      <h3>Esportes</h3>
+
+      <p>
+        Foto exibida no serviço de esportes.
+      </p>
+
+
+      <div
+        id="service-esportes-preview"
+        class="service-admin-preview"
+      >
+
+        <span>
+          Nenhuma imagem definida
+        </span>
+
+      </div>
+
+
+      <input
+        id="service-esportes-file"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+      >
+
+
+      <button
+        id="service-esportes-button"
+        type="button"
+        class="secondary-button"
+      >
+        Escolher imagem
+      </button>
+
+
+      <div
+        id="service-esportes-status"
+        class="service-admin-status"
+      ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         EVENTOS
+    ================================================== -->
+
+    <div class="service-admin-card">
+
+      <h3>Eventos</h3>
+
+      <p>
+        Foto exibida no serviço de eventos.
+      </p>
+
+
+      <div
+        id="service-eventos-preview"
+        class="service-admin-preview"
+      >
+
+        <span>
+          Nenhuma imagem definida
+        </span>
+
+      </div>
+
+
+      <input
+        id="service-eventos-file"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+      >
+
+
+      <button
+        id="service-eventos-button"
+        type="button"
+        class="secondary-button"
+      >
+        Escolher imagem
+      </button>
+
+
+      <div
+        id="service-eventos-status"
+        class="service-admin-status"
+      ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         RETRATOS
+    ================================================== -->
+
+    <div class="service-admin-card">
+
+      <h3>Retratos</h3>
+
+      <p>
+        Foto exibida no serviço de retratos.
+      </p>
+
+
+      <div
+        id="service-retratos-preview"
+        class="service-admin-preview"
+      >
+
+        <span>
+          Nenhuma imagem definida
+        </span>
+
+      </div>
+
+
+      <input
+        id="service-retratos-file"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+      >
+
+
+      <button
+        id="service-retratos-button"
+        type="button"
+        class="secondary-button"
+      >
+        Escolher imagem
+      </button>
+
+
+      <div
+        id="service-retratos-status"
+        class="service-admin-status"
+      ></div>
+
+    </div>
+
+
+  </div>
+
+</div>
 
 </section>
 
@@ -2072,6 +2314,54 @@ if (heroSiteFile && heroSiteButton) {
       );
     }
 
+        /* =========================
+       SERVIÇOS
+    ========================= */
+
+    const services = [
+      "esportes",
+      "eventos",
+      "retratos"
+    ];
+
+    services.forEach(service => {
+
+      const serviceData =
+        data.services &&
+        data.services[service];
+
+      const preview =
+        document.getElementById(
+          `service-${service}-preview`
+        );
+
+      if (
+        serviceData &&
+        serviceData.image &&
+        preview
+      ) {
+
+        preview.innerHTML = "";
+
+        const image =
+          document.createElement("img");
+
+        image.src =
+          serviceData.image;
+
+        image.alt =
+          `Foto de ${service}`;
+
+        image.loading =
+          "lazy";
+
+        preview.appendChild(
+          image
+        );
+      }
+
+    });
+    
   } catch (error) {
 
     console.error(
@@ -2082,6 +2372,291 @@ if (heroSiteFile && heroSiteButton) {
   }
 
 }
+    /* =====================================================
+   IMAGENS DOS SERVIÇOS
+===================================================== */
+
+const serviceImageSlots = [
+  "esportes",
+  "eventos",
+  "retratos"
+];
+
+
+async function uploadServiceImage(
+  service,
+  file
+) {
+
+  const button =
+    document.getElementById(
+      `service-${service}-button`
+    );
+
+  const status =
+    document.getElementById(
+      `service-${service}-status`
+    );
+
+  const preview =
+    document.getElementById(
+      `service-${service}-preview`
+    );
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Enviando...";
+
+  status.textContent =
+    "Preparando upload...";
+
+
+  try {
+
+    /*
+      PREPARA O UPLOAD
+    */
+
+    const uploadResponse =
+      await fetch(
+        "/.netlify/functions/upload-r2",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            filename:
+              file.name,
+
+            contentType:
+              file.type
+
+          })
+        }
+      );
+
+
+    const uploadData =
+      await uploadResponse.json();
+
+
+    if (
+      !uploadResponse.ok ||
+      !uploadData.success
+    ) {
+
+      throw new Error(
+        uploadData.message ||
+        "Não foi possível preparar o upload."
+      );
+
+    }
+
+
+    /*
+      ENVIA PARA O R2
+    */
+
+    status.textContent =
+      "Enviando imagem...";
+
+
+    const r2Response =
+      await fetch(
+        uploadData.uploadUrl,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type":
+              file.type
+          },
+
+          body:
+            file
+        }
+      );
+
+
+    if (!r2Response.ok) {
+
+      throw new Error(
+        "Não foi possível enviar a imagem para o R2."
+      );
+
+    }
+
+
+    /*
+      SALVA A CONFIGURAÇÃO
+    */
+
+    status.textContent =
+      "Salvando imagem...";
+
+
+    const saveResponse =
+      await fetch(
+        "/.netlify/functions/save-site-image",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            slot:
+              `service-${service}`,
+
+            publicUrl:
+              uploadData.publicUrl,
+
+            key:
+              uploadData.key,
+
+            filename:
+              file.name
+
+          })
+        }
+      );
+
+
+    const saveData =
+      await saveResponse.json();
+
+
+    if (
+      !saveResponse.ok ||
+      !saveData.success
+    ) {
+
+      throw new Error(
+        saveData.message ||
+        "Não foi possível salvar a imagem."
+      );
+
+    }
+
+
+    /*
+      ATUALIZA A PRÉVIA
+    */
+
+    preview.innerHTML = "";
+
+    const image =
+      document.createElement("img");
+
+    image.src =
+      uploadData.publicUrl;
+
+    image.alt =
+      `Foto de ${service}`;
+
+    preview.appendChild(
+      image
+    );
+
+
+    status.textContent =
+      "Imagem atualizada com sucesso.";
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.textContent =
+      error.message ||
+      "Erro ao enviar a imagem.";
+
+
+  } finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Escolher imagem";
+
+    const fileInput =
+      document.getElementById(
+        `service-${service}-file`
+      );
+
+    if (fileInput) {
+      fileInput.value = "";
+    }
+
+  }
+
+}
+
+
+/*
+  CONFIGURA OS TRÊS SERVIÇOS
+*/
+
+serviceImageSlots.forEach(
+  service => {
+
+    const button =
+      document.getElementById(
+        `service-${service}-button`
+      );
+
+    const fileInput =
+      document.getElementById(
+        `service-${service}-file`
+      );
+
+
+    if (!button || !fileInput) {
+      return;
+    }
+
+
+    button.addEventListener(
+      "click",
+      () => {
+        fileInput.click();
+      }
+    );
+
+
+    fileInput.addEventListener(
+      "change",
+      async () => {
+
+        const file =
+          fileInput.files[0];
+
+        if (!file) {
+          return;
+        }
+
+        await uploadServiceImage(
+          service,
+          file
+        );
+
+      }
+    );
+
+  }
+);
+    
     loadSiteImages();
     loadPhotos();
     
