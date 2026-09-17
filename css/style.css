@@ -792,8 +792,16 @@ section{
   margin-bottom: 40px;
 }
 
-.contact-links{
-  border-top: 1px solid var(--line-dark);
+.contact-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.contact-links li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .contact-links li{
@@ -1074,5 +1082,10 @@ section{
     flex-direction:column;
     align-items:flex-start;
   }
+   
+   .contact-links {
+  grid-template-columns: 1fr;
+   }
+   
 }
 
