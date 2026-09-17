@@ -1008,9 +1008,11 @@ section{
 @media (max-width: 980px){
 
   .service-media {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-  }
+      width: 85%;
+      aspect-ratio: 16 / 10;
+      margin-left: auto;
+      margin-right: auto;
+   }
 
   .about-grid{
     grid-template-columns: 1fr;
