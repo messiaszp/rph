@@ -753,8 +753,8 @@ section{
 }
 
 .service-media {
-  width: 420px;
-  aspect-ratio: 4 / 3;
+  width: 520px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   margin-left: auto;
 }
@@ -1009,7 +1009,7 @@ section{
 
   .service-media {
       width: 100%;
-      aspect-ratio: 16 / 5;
+      aspect-ratio: 16 / 9;
       margin-left: auto;
       margin-right: auto;
    }
