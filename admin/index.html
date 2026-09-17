@@ -351,6 +351,92 @@
     }
 
     /* =====================================================
+       IMAGENS DO SITE
+    ===================================================== */
+
+    .site-images-section {
+      margin-top: 42px;
+    }
+
+    .site-images-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .site-image-card {
+      min-width: 0;
+      padding: 22px;
+      border: 1px solid var(--border);
+      background: var(--panel-soft);
+    }
+
+    .site-image-card h3 {
+      margin: 0 0 6px;
+      font-family: Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+    }
+
+    .site-image-card > p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .site-image-preview {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      background: #0e0d0c;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .site-image-preview span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .site-image-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .secondary-button {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 18px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--text);
+      transition: 0.25s ease;
+    }
+
+    .secondary-button:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .secondary-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .site-image-status {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    
+    /* =====================================================
        RESPONSIVO
     ===================================================== */
 
@@ -396,6 +482,10 @@
       }
 
       #photos-list {
+        grid-template-columns: 1fr;
+      }
+
+      .site-images-grid {
         grid-template-columns: 1fr;
       }
 
@@ -539,117 +629,121 @@
        IMAGENS DO SITE
   ====================================================== -->
 
-  <div class="site-images-section">
+<div class="site-images-section">
 
-    <div class="section-header">
+  <div class="section-header">
 
-      <div>
+    <h2>Imagens do site</h2>
 
-        <h2>Imagens do site</h2>
-
-        <p>
-          Gerencie as imagens exibidas nas principais áreas do site.
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <div class="site-images-grid">
-
-
-      <!-- FOTO PRINCIPAL -->
-
-      <div class="site-image-card">
-
-        <h3>Foto principal</h3>
-
-        <p>
-          Imagem de destaque exibida na página inicial.
-        </p>
-
-        <div
-          id="hero-site-preview"
-          class="site-image-preview"
-        >
-
-          <span>
-            Nenhuma imagem definida
-          </span>
-
-        </div>
-
-        <input
-          id="hero-site-file"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          hidden
-        >
-
-        <button
-          id="hero-site-button"
-          type="button"
-          class="secondary-button"
-        >
-          Escolher imagem
-        </button>
-
-        <div
-          id="hero-site-status"
-          class="site-image-status"
-        ></div>
-
-      </div>
-
-
-      <!-- FOTO SOBRE -->
-
-      <div class="site-image-card">
-
-        <h3>Foto do Sobre</h3>
-
-        <p>
-          Imagem exibida na seção Sobre.
-        </p>
-
-        <div
-          id="about-site-preview"
-          class="site-image-preview"
-        >
-
-          <span>
-            Nenhuma imagem definida
-          </span>
-
-        </div>
-
-        <input
-          id="about-site-file"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          hidden
-        >
-
-        <button
-          id="about-site-button"
-          type="button"
-          class="secondary-button"
-        >
-          Escolher imagem
-        </button>
-
-        <div
-          id="about-site-status"
-          class="site-image-status"
-        ></div>
-
-      </div>
-
-
-    </div>
+    <p>
+      Gerencie as imagens das principais áreas da página.
+    </p>
 
   </div>
+
+
+  <div class="site-images-grid">
+
+
+    <!-- HERO -->
+
+    <div class="site-image-card">
+
+      <h3>Hero</h3>
+
+      <p>
+        Foto principal exibida como fundo da capa inicial.
+      </p>
+
+
+      <div
+        id="hero-site-preview"
+        class="site-image-preview"
+      >
+
+        <span>
+          Nenhuma imagem definida
+        </span>
+
+      </div>
+
+
+      <input
+        id="hero-site-file"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+      >
+
+
+      <button
+        id="hero-site-button"
+        type="button"
+        class="secondary-button"
+      >
+        Escolher imagem
+      </button>
+
+
+      <div
+        id="hero-site-status"
+        class="site-image-status"
+      ></div>
+
+    </div>
+
+
+    <!-- SOBRE -->
+
+    <div class="site-image-card">
+
+      <h3>Sobre</h3>
+
+      <p>
+        Foto exibida na seção Sobre do site.
+      </p>
+
+
+      <div
+        id="about-site-preview"
+        class="site-image-preview"
+      >
+
+        <span>
+          Nenhuma imagem definida
+        </span>
+
+      </div>
+
+
+      <input
+        id="about-site-file"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+      >
+
+
+      <button
+        id="about-site-button"
+        type="button"
+        class="secondary-button"
+      >
+        Escolher imagem
+      </button>
+
+
+      <div
+        id="about-site-status"
+        class="site-image-status"
+      ></div>
+
+    </div>
+
+
+  </div>
+
+</div>
 
 
 </section>
