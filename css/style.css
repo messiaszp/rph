@@ -367,12 +367,7 @@ img, .ph{
 }
 
 .hero-kicker{
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
-  margin-bottom: 18px;
-  opacity: 0;
-  animation: rise .9s var(--ease) .15s forwards;
+  display: none;
 }
 
 .hero-title{
