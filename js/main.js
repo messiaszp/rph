@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
       throw new Error("A função não retornou as fotografias");
     }
 
-    galleryData = data.photos.filter(photo => photo.image);
+    galleryData = data.photos.filter(
+      photo => photo.image && photo.published !== false
+);
 
     renderGallery();
 
