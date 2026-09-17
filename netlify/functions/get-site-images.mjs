@@ -1,4 +1,3 @@
-
 import { getStore } from "@netlify/blobs";
 
 
@@ -6,21 +5,12 @@ export default async () => {
 
   try {
 
-    /*
-      Acessa o armazenamento
-      onde ficam as configurações
-      das imagens do site.
-    */
-
     const store =
       getStore("site-settings");
 
 
     /*
-      Busca as duas imagens:
-
-      hero  = foto principal
-      about = foto do Sobre
+      IMAGEM PRINCIPAL — HERO
     */
 
     const hero =
@@ -32,6 +22,10 @@ export default async () => {
       );
 
 
+    /*
+      IMAGEM DO SOBRE
+    */
+
     const about =
       await store.get(
         "about",
@@ -42,7 +36,38 @@ export default async () => {
 
 
     /*
-      Retorna as imagens.
+      IMAGENS DOS SERVIÇOS
+    */
+
+    const esportes =
+      await store.get(
+        "service-esportes",
+        {
+          type: "json"
+        }
+      );
+
+
+    const eventos =
+      await store.get(
+        "service-eventos",
+        {
+          type: "json"
+        }
+      );
+
+
+    const retratos =
+      await store.get(
+        "service-retratos",
+        {
+          type: "json"
+        }
+      );
+
+
+    /*
+      RETORNA TODAS AS IMAGENS
     */
 
     return Response.json({
@@ -54,7 +79,20 @@ export default async () => {
         hero || null,
 
       about:
-        about || null
+        about || null,
+
+      services: {
+
+        esportes:
+          esportes || null,
+
+        eventos:
+          eventos || null,
+
+        retratos:
+          retratos || null
+
+      }
 
     });
 
@@ -68,15 +106,22 @@ export default async () => {
 
 
     return Response.json(
+
       {
-        success: false,
+        success:
+          false,
+
         message:
           "Erro ao carregar imagens do site"
       },
-      { status: 500 }
+
+      {
+        status:
+          500
+      }
+
     );
 
   }
 
 };
-
