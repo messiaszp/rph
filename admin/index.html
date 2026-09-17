@@ -1660,6 +1660,237 @@ if (aboutSiteFile && aboutSiteButton) {
   );
 
 }
+
+/* =====================================================
+   FOTO PRINCIPAL — HERO
+===================================================== */
+
+if (heroSiteFile && heroSiteButton) {
+
+  heroSiteFile.addEventListener(
+    "change",
+    async () => {
+
+      const file =
+        heroSiteFile.files[0];
+
+      if (!file) {
+        return;
+      }
+
+
+      const status =
+        document.getElementById(
+          "hero-site-status"
+        );
+
+      const preview =
+        document.getElementById(
+          "hero-site-preview"
+        );
+
+
+      heroSiteButton.disabled = true;
+
+      heroSiteButton.textContent =
+        "Enviando...";
+
+      status.textContent =
+        "Preparando upload...";
+
+
+      try {
+
+        /*
+          1. Solicita URL assinada ao R2
+        */
+
+        const uploadResponse =
+          await fetch(
+            "/.netlify/functions/upload-r2",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                filename:
+                  file.name,
+
+                contentType:
+                  file.type
+
+              })
+
+            }
+          );
+
+
+        const uploadData =
+          await uploadResponse.json();
+
+
+        if (
+          !uploadResponse.ok ||
+          !uploadData.success
+        ) {
+
+          throw new Error(
+            uploadData.message ||
+            "Não foi possível preparar o upload."
+          );
+
+        }
+
+
+        status.textContent =
+          "Enviando imagem...";
+
+
+        /*
+          2. Envia diretamente para o R2
+        */
+
+        const r2Response =
+          await fetch(
+            uploadData.uploadUrl,
+            {
+              method: "PUT",
+
+              headers: {
+                "Content-Type":
+                  file.type
+              },
+
+              body: file
+            }
+          );
+
+
+        if (!r2Response.ok) {
+
+          throw new Error(
+            "Não foi possível enviar a imagem para o R2."
+          );
+
+        }
+
+
+        status.textContent =
+          "Salvando imagem...";
+
+
+        /*
+          3. Salva como FOTO PRINCIPAL
+        */
+
+        const saveResponse =
+          await fetch(
+            "/.netlify/functions/save-site-image",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                slot:
+                  "hero",
+
+                publicUrl:
+                  uploadData.publicUrl,
+
+                key:
+                  uploadData.key,
+
+                filename:
+                  file.name
+
+              })
+
+            }
+          );
+
+
+        const saveData =
+          await saveResponse.json();
+
+
+        if (
+          !saveResponse.ok ||
+          !saveData.success
+        ) {
+
+          throw new Error(
+            saveData.message ||
+            "Não foi possível salvar a imagem."
+          );
+
+        }
+
+
+        /*
+          4. Atualiza a prévia
+        */
+
+        preview.innerHTML = "";
+
+
+        const image =
+          document.createElement("img");
+
+
+        image.src =
+          uploadData.publicUrl;
+
+
+        image.alt =
+          "Foto principal";
+
+
+        preview.appendChild(
+          image
+        );
+
+
+        status.textContent =
+          "Imagem atualizada com sucesso.";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        status.textContent =
+          error.message ||
+          "Erro ao enviar a imagem.";
+
+      } finally {
+
+        heroSiteButton.disabled =
+          false;
+
+        heroSiteButton.textContent =
+          "Escolher imagem";
+
+        heroSiteFile.value = "";
+
+      }
+
+    }
+  );
+
+}
+
+
     /* =====================================================
        INICIAR
     ===================================================== */
