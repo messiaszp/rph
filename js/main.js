@@ -646,9 +646,15 @@ async function loadAboutImage() {
    INICIAR
 ========================================================= */
 
-loadGallery();
 
-loadAboutImage();
+  loadGallery();
+
+  loadAboutImage();
+
+  loadHeroImage();
+
+});
+
 
 });
 
