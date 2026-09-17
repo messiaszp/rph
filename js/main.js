@@ -641,7 +641,93 @@ async function loadAboutImage() {
 
 }
 
+/* =========================================================
+   IMAGENS DOS SERVIÇOS
+========================================================= */
 
+async function loadServicesImages() {
+
+  try {
+
+    const response =
+      await fetch("/.netlify/functions/get-site-images");
+
+    if (!response.ok) return;
+
+    const data =
+      await response.json();
+
+    if (
+      !data.success ||
+      !data.services
+    ) {
+      return;
+    }
+
+    const services = [
+      "esportes",
+      "eventos",
+      "retratos"
+    ];
+
+    services.forEach(service => {
+
+      const serviceData =
+        data.services[service];
+
+      if (
+        !serviceData ||
+        !serviceData.image
+      ) {
+        return;
+      }
+
+      const serviceMedia =
+        document.querySelector(
+          `.service-row[data-service-media="${service}"] .service-media`
+        );
+
+      if (!serviceMedia) {
+        return;
+      }
+
+      serviceMedia.classList.remove("ph");
+
+      serviceMedia.removeAttribute(
+        "data-ph-label"
+      );
+
+      serviceMedia.innerHTML = "";
+
+      const image =
+        document.createElement("img");
+
+      image.src =
+        serviceData.image;
+
+      image.alt =
+        `Fotografia de ${service}`;
+
+      image.loading =
+        "lazy";
+
+      serviceMedia.appendChild(
+        image
+      );
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao carregar imagens dos serviços:",
+      error
+    );
+
+  }
+
+}
+  
 /* =========================================================
    INICIAR
 ========================================================= */
@@ -653,6 +739,7 @@ async function loadAboutImage() {
 
   loadHeroImage();
 
+  loadServicesImages();
 
 });
 
