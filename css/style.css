@@ -549,7 +549,7 @@ section{
 
 .about .lead{
   font-size: 1.2rem;
-  font-family: "Fraunces", serif;
+  font-family: inherit;
   font-weight: 400;
 }
 
@@ -557,6 +557,7 @@ section{
   color: var(--ink-dark-soft);
   max-width: 56ch;
   font-family: inherit;
+  font-size: 1.2rem;
 }
 
 .about-note{
