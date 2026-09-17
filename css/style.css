@@ -774,12 +774,11 @@ section{
   background: var(--black);
 }
 
-.contact-grid{
-  max-width: var(--maxw);
-  margin:0 auto;
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(40px, 6vw, 100px);
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 80px;
+  align-items: start;
 }
 
 .contact-intro h2{
