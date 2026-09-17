@@ -346,25 +346,14 @@ img, .ph{
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(10,9,8,0.25) 0%,
-      rgba(10,9,8,0.10) 35%,
-      rgba(10,9,8,0.45) 65%,
-      rgba(10,9,8,0.88) 100%
-    );
-}
 
-.hero-scrim{
-  position:absolute;
-  inset:0;
   background:
     linear-gradient(
       180deg,
-      rgba(10,9,8,0.35) 0%,
-      rgba(10,9,8,0.15) 40%,
-      rgba(10,9,8,0.78) 100%
+      rgba(10,9,8,0.18) 0%,
+      rgba(10,9,8,0.08) 35%,
+      rgba(10,9,8,0.30) 58%,
+      rgba(10,9,8,0.88) 100%
     );
 }
 
@@ -393,7 +382,8 @@ img, .ph{
   animation: rise 1s var(--ease) .3s forwards;
 
   text-shadow:
-    0 3px 18px rgba(0,0,0,0.45);
+    0 2px 4px rgba(0,0,0,0.75),
+    0 8px 28px rgba(0,0,0,0.55);
 }
 
 .hero-lede{
